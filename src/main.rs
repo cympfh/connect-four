@@ -295,6 +295,15 @@ impl Solver {
         let mut maxp = 0.0;
         for &mv in self.choices(&game).iter() {
             let g = game.play(mv)?; // the game after next
+            if g.judge() == game.next {
+                if self.verbose {
+                    println!("---");
+                    g.write();
+                    println!("You can win soon!");
+                    println!();
+                }
+                return Ok(g);
+            }
             let mut minp = 1.0;
             for &mv in self.choices(&g).iter() {
                 let h = g.play(mv)?; // the game after prev (or enemy)
