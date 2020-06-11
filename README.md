@@ -46,3 +46,13 @@ cargo run --release -- --next x < ./sample.input
 
 Best move for the `--next` player will be outputed.
 
+### Graphical User Interface
+
+`server.py` is written in Python3 and launch a server for UI.
+
+```bash
+pip3 install fastapi uvicorn
+uvicorn server:app --port 8080
+$(open-browser) http://localhost:8080
+```
+
