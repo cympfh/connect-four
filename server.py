@@ -15,6 +15,7 @@ async def index():
     <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css">
         <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+        <title>Connect-Four 6x7</title>
 <style>
 div.line:hover {
     cursor: pointer;
@@ -166,6 +167,7 @@ div#thinking {
                             document.getElementById('result').innerHTML = msg;
                             document.getElementById('section_finished').style.display = 'block';
                             nextplayer = '-';
+                            unthink();
                         }
                     }
                 });
