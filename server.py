@@ -62,11 +62,28 @@ div#thinking {
         <div class="section" id="section_finished">
             <div class="container">
                 <h1 class="title" id="result">Game Finished</h1>
-                <p><i class="fas fa-redo"></i> <a href="javascript:location.reload()">Page Reload to Restart</a></p>
+                <p><i class="fas fa-redo"></i> <a href="javascript:location.reload()">Refresh to Restart</a></p>
             </div>
         </div>
         <div class="section" id="section_game">
             <div class="container">
+                <div class="field">
+                    <div class="field has-addons">
+                        <p class="control">
+                            <a class="button is-static">CPU Power</a>
+                        </p>
+                        <p class="control">
+                            <div class="select">
+                                <select id="cpu_power">
+                                    <option value="ants">Ants</option>
+                                    <option value="bees" selected="selected">Bees</option>
+                                    <option value="dogs">Dogs</option>
+                                    <option value="whales">Whales</option>
+                                </select>
+                            </div>
+                        </p>
+                    </div>
+                </div>
                 <div class="section">
                     <div class="container">
                         <div id="game"></div>
@@ -156,6 +173,15 @@ div#thinking {
                 xhr.send();
             }
 
+            function power() {
+                var label = document.getElementById('cpu_power').value;
+                return label == "ants" ? 7
+                     : label == "bees" ? 100
+                     : label == "dogs" ? 300
+                     : label == "whales" ? 800
+                     : 200;
+            }
+
             function solve() {
                 think();
                 var xhr = new XMLHttpRequest();
@@ -170,7 +196,7 @@ div#thinking {
                     }
                     unthink();
                 });
-                xhr.open("GET", `/solve/${game_to_code()}/x`, true);
+                xhr.open("GET", `/solve/${game_to_code()}/x?num_try=${power()}`, true);
                 xhr.send();
             }
 
@@ -245,13 +271,13 @@ div#thinking {
 
 
 @app.get("/solve/{game}/{next_player}")
-async def solve(game, next_player):
+async def solve(game: str, next_player: str, num_try: int = 200):
 
     assert game_pattern.match(game)
     assert next_player == "o" or next_player == "x"
 
     result = subprocess.check_output(
-        f"echo '{game}' | tr ';' '\n'| cargo run --release -- --next {next_player}",
+        f"echo '{game}' | tr ';' '\n'| cargo run --release -- --next {next_player} --num-try {num_try}",
         shell=True,
     )
     return {

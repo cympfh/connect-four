@@ -8,6 +8,8 @@ struct Opt {
     verbose: bool,
     #[structopt(short, long)]
     next: String,
+    #[structopt(short, long, default_value = "200")]
+    num_try: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -227,11 +229,12 @@ impl Game {
 
 struct Solver {
     verbose: bool,
+    num_try: usize,
 }
 
 impl Solver {
-    fn new(verbose: bool) -> Self {
-        Self { verbose }
+    fn new(verbose: bool, num_try: usize) -> Self {
+        Self { verbose, num_try }
     }
 
     /// ベストな手を打ったあとのゲームを返す
@@ -315,7 +318,7 @@ impl Solver {
             let mut minp = 1.0;
             for &mv in self.choices(&g).iter() {
                 let h = g.play(mv)?; // the game after prev (or enemy)
-                let p = self.estimate_prob_win(&h, 200); // prob for the next win
+                let p = self.estimate_prob_win(&h, self.num_try); // prob for the next win
 
                 if self.verbose {
                     println!("---");
@@ -344,7 +347,7 @@ impl Solver {
 fn main() {
     let opt = Opt::from_args();
     let game = Game::read(Entity::from_char(opt.next.chars().next().unwrap()));
-    let solver = Solver::new(opt.verbose);
+    let solver = Solver::new(opt.verbose, opt.num_try);
 
     match solver.solve(&game) {
         Ok(goodgame) => {
@@ -355,6 +358,7 @@ fn main() {
         }
         Err(X) => {
             println!("X Win");
+
         }
         _ => {
             println!("Draw");
