@@ -102,7 +102,7 @@ impl Game {
         }
     }
 
-    fn play_mut(&mut self, mv: Move) -> Result<(), ()> {
+    fn play_mut(&mut self, mv: Move) -> Result<(), Entity> {
         for i in (0..self.height).rev() {
             if self.data[i][mv.col] == Empty {
                 self.data[i][mv.col] = self.next;
@@ -110,14 +110,14 @@ impl Game {
                 return Ok(());
             }
         }
-        Err(())
+        Err(Empty)
     }
 
-    fn play(&self, mv: Move) -> Result<Self, ()> {
+    fn play(&self, mv: Move) -> Result<Self, Entity> {
         let mut g = self.clone();
         match g.play_mut(mv) {
             Ok(_) => Ok(g),
-            _ => Err(()),
+            Err(e) => Err(e),
         }
     }
 
@@ -234,14 +234,14 @@ impl Solver {
         Self { verbose }
     }
 
-    fn solve(&self, game: &Game) -> Result<Game, ()> {
+    /// ベストな手を打ったあとのゲームを返す
+    /// 勝敗がついている場合は Entity::{O, X} を返す
+    fn solve(&self, game: &Game) -> Result<Game, Entity> {
         match game.judge() {
-            O | X => {
-                return Err(());
-            }
-            _ => {}
+            O => Err(O),
+            X => Err(X),
+            _ => self.play_wise(&game),
         }
-        self.play_wise(&game)
     }
 
     fn choices(&self, game: &Game) -> Vec<Move> {
@@ -251,15 +251,23 @@ impl Solver {
             .collect()
     }
 
-    fn random_play_mut(&self, game: &mut Game) -> Result<(), ()> {
+    fn random_play_mut(&self, game: &mut Game) -> Result<(), Entity> {
         let mvs = self.choices(&game);
         if mvs.is_empty() {
-            return Err(());
+            return Err(Empty);
         }
         let mut rng = rand::thread_rng();
         let idx = Uniform::from(0..mvs.len()).sample(&mut rng);
         let mv = mvs[idx];
         game.play_mut(mv)
+    }
+
+    fn random_play(&self, game: &Game) -> Result<Game, Entity> {
+        let mut g = game.clone();
+        match self.random_play_mut(&mut g) {
+            Ok(_) => Ok(g),
+            Err(e) => Err(e),
+        }
     }
 
     /// 決着までプレイして勝者を返す
@@ -290,7 +298,7 @@ impl Solver {
         win as f32 / num_try as f32
     }
 
-    fn play_wise(&self, game: &Game) -> Result<Game, ()> {
+    fn play_wise(&self, game: &Game) -> Result<Game, Entity> {
         let mut goodgame = None; // good to next
         let mut maxp = 0.0;
         for &mv in self.choices(&game).iter() {
@@ -328,7 +336,7 @@ impl Solver {
         if let Some(g) = goodgame {
             Ok(g)
         } else {
-            Err(())
+            self.random_play(&game)
         }
     }
 }
@@ -338,9 +346,18 @@ fn main() {
     let game = Game::read(Entity::from_char(opt.next.chars().next().unwrap()));
     let solver = Solver::new(opt.verbose);
 
-    if let Ok(goodgame) = solver.solve(&game) {
-        goodgame.write();
-    } else {
-        println!("No choice");
+    match solver.solve(&game) {
+        Ok(goodgame) => {
+            goodgame.write();
+        }
+        Err(O) => {
+            println!("O Win");
+        }
+        Err(X) => {
+            println!("X Win");
+        }
+        _ => {
+            println!("Draw");
+        }
     }
 }

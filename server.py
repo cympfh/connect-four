@@ -14,21 +14,23 @@ async def index():
 <html>
     <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css">
+        <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 <style>
 div.line:hover {
+    cursor: pointer;
     background-color: #f0f0f0;
 }
 div.column.x {
-    background-color: #dd9999;
+    background-color: #dd8888;
 }
 div.column.x.new {
-    background-color: #dd6666;
+    background-color: #dd5555;
 }
 div.column.o {
-    background-color: #99dd99;
+    background-color: #88dd88;
 }
 div.column.o.new {
-    background-color: #66dd66;
+    background-color: #55dd55;
 }
 div#section_game {
     display: none;
@@ -55,8 +57,8 @@ div#section_finished {
         </div>
         <div class="section" id="section_finished">
             <div class="container">
-                <h1 class="title">Game Finished</h1>
-                <p>Page Reload to Restart</p>
+                <h1 class="title" id="result">Game Finished</h1>
+                <p><i class="fas fa-redo"></i> <a href="javascript:location.reload()">Page Reload to Restart</a></p>
             </div>
         </div>
         <div class="section" id="section_game">
@@ -118,8 +120,12 @@ div#section_finished {
                 xhr.addEventListener("load", () => {
                     var response = JSON.parse(xhr.responseText);
                     if (response.stdout) {
-                        if (response.stdout == "No choice") {
+                        if (response.stdout == "X Win" || response.stdout == "O Win" || response.stdout == "Draw") {
+                            var msg = response.stdout == "X Win" ? "CPU Win" :
+                            response.stdout == "O Win" ? "You Win" : "Draw";
+                            document.getElementById('result').innerHTML = msg;
                             document.getElementById('section_finished').style.display = 'block';
+                            nextplayer = '-';
                         }
                     }
                 });
@@ -132,14 +138,9 @@ div#section_finished {
                 xhr.addEventListener("load", () => {
                     var response = JSON.parse(xhr.responseText);
                     if (response.stdout) {
-                        if (response.stdout == "No choice") {
-                            nextplayer = '-';
-                            document.getElementById('section_finished').style.display = 'block';
-                        } else {
-                            update(response.stdout.split("\\n"));
-                            finishjudge();
-                            nextplayer = 'o';
-                        }
+                        update(response.stdout.split("\\n"));
+                        finishjudge();
+                        nextplayer = 'o';
                     } else {
                         console.log(response);
                     }
@@ -172,11 +173,19 @@ div#section_finished {
                     for (var j = 0; j < 7; ++j) {
                         var td = document.getElementById(`td_${i}_${j}`);
                         line += td.classList.contains('x') ? 'x' : td.classList.contains('o') ? 'o' : '.';
-                        td.classList.remove('new');
                     }
                     code.push(line);
                 }
                 return code.join(';');
+            }
+
+            function remove_new() {
+                for (var i = 0; i < 6; ++i) {
+                    for (var j = 0; j < 7; ++j) {
+                        var td = document.getElementById(`td_${i}_${j}`);
+                        td.classList.remove('new');
+                    }
+                }
             }
 
             function choice(j) {
@@ -184,9 +193,12 @@ div#section_finished {
                 for (var i = 5; i >= 0; --i) {
                     var td = document.getElementById(`td_${i}_${j}`);
                     if (td.classList.contains('empty')) {
+                        remove_new();
                         td.classList.remove('empty');
                         td.classList.add('o');
+                        td.classList.add('new');
                         nextplayer = 'x';
+                        finishjudge();
                         solve();
                         return;
                     }
