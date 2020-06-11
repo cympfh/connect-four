@@ -48,6 +48,7 @@ div#section_finished {
                 </div>
             </nav>
         </div>
+
         <div class="section" id="section_choose">
             <div class="container">
                 <h1 class="title">Choose</h1>
@@ -73,6 +74,14 @@ div#section_finished {
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <div class="container">
+                <h1 class="title">Rule?</h1>
+                <p><a href="https://ja.wikipedia.org/wiki/%E5%9B%9B%E7%9B%AE%E4%B8%A6%E3%81%B9">四目並べ</a></p>
+            </div>
+        </div>
+
         <script>
             // events
             document.getElementById('button_start_human').addEventListener('click', (e) => init('o'));
