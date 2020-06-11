@@ -38,6 +38,9 @@ div#section_game {
 div#section_finished {
     display: none;
 }
+div#thinking {
+    display: none;
+}
 </style>
     </head>
     <body>
@@ -64,13 +67,17 @@ div#section_finished {
         </div>
         <div class="section" id="section_game">
             <div class="container">
-                <div class="section" style="max-width: 30rem !important">
+                <div class="section">
                     <div class="container">
                         <div id="game"></div>
                     </div>
                 </div>
                 <div class="section">
-                    <p>If you cannot see 6x7 table, You need more wide monitor. Mobile Phone...??</p>
+                    <div class="container">
+                        <p id="thinking">
+                            <i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Thinking...
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,6 +86,12 @@ div#section_finished {
             <div class="container">
                 <h1 class="title">Rule?</h1>
                 <p><a href="https://ja.wikipedia.org/wiki/%E5%9B%9B%E7%9B%AE%E4%B8%A6%E3%81%B9">四目並べ</a></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="container">
+                <p>If you cannot see 6x7 table, You need more wide monitor. Mobile Phone...??</p>
             </div>
         </div>
 
@@ -116,6 +129,7 @@ div#section_finished {
                     line_parent.appendChild(line_child);
                     table.appendChild(line_parent);
                 }
+                unthink();
                 if (next == 'x') { // CPU
                     solve();
                 }
@@ -143,6 +157,7 @@ div#section_finished {
             }
 
             function solve() {
+                think();
                 var xhr = new XMLHttpRequest();
                 xhr.addEventListener("load", () => {
                     var response = JSON.parse(xhr.responseText);
@@ -153,6 +168,7 @@ div#section_finished {
                     } else {
                         console.log(response);
                     }
+                    unthink();
                 });
                 xhr.open("GET", `/solve/${game_to_code()}/x`, true);
                 xhr.send();
@@ -212,6 +228,14 @@ div#section_finished {
                         return;
                     }
                 }
+            }
+
+            function think() {
+                document.getElementById('thinking').style.display = 'block';
+            }
+
+            function unthink() {
+                document.getElementById('thinking').style.display = 'none';
             }
 
         </script>
