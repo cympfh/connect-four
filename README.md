@@ -22,12 +22,14 @@ Each Input is like
 Character `o` and `x` are the colored discs for players.
 And `.` is for empty.
 
-The height and width can be any size.
-The following is also ok.
+The height and width can be any size if `>= 4`.
+The following is also ok, and this is the minimal size.
 
 ```
-...
-.o.
+....
+....
+....
+.o..
 ```
 
 ### Commandline
@@ -35,7 +37,7 @@ The following is also ok.
 This AI works with `cargo`.
 
 ```bash
-cargo run -- --next o < ./sample.input
+cargo run --release -- --next x < ./sample.input
 ```
 
 `--next` specifies which (`o` or `x`) is the next player.
