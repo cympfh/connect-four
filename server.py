@@ -226,13 +226,10 @@ async def solve(game, next_player):
     assert game_pattern.match(game)
     assert next_player == "o" or next_player == "x"
 
-    result = subprocess.run(
+    result = subprocess.check_output(
         f"echo '{game}' | tr ';' '\n'| cargo run --release -- --next {next_player}",
         shell=True,
-        capture_output=True,
     )
-    print(result)
     return {
-        "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
+        "stdout": result.strip()
     }
