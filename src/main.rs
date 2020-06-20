@@ -8,7 +8,7 @@ struct Opt {
     verbose: bool,
     #[structopt(short, long)]
     next: String,
-    #[structopt(short, long, default_value = "200")]
+    #[structopt(long, default_value = "200")]
     num_try: usize,
 }
 
@@ -358,7 +358,6 @@ fn main() {
         }
         Err(X) => {
             println!("X Win");
-
         }
         _ => {
             println!("Draw");
