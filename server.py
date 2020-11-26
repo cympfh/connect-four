@@ -177,7 +177,7 @@ div#thinking {
 
             function power() {
                 var label = document.getElementById('cpu_power').value;
-                return label == "ants" ? 7
+                return label == "ants" ? 16
                      : label == "bees" ? 100
                      : label == "dogs" ? 300
                      : label == "whales" ? 800
