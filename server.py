@@ -77,9 +77,10 @@ div#thinking {
                             <div class="select">
                                 <select id="cpu_power">
                                     <option value="ants">Ants</option>
-                                    <option value="bees" selected="selected">Bees</option>
-                                    <option value="dogs">Dogs</option>
+                                    <option value="bees">Bees</option>
+                                    <option value="dogs" selected="selected">Dogs</option>
                                     <option value="whales">Whales</option>
+                                    <option value="power">POWER</option>
                                 </select>
                             </div>
                         </p>
@@ -181,6 +182,7 @@ div#thinking {
                      : label == "bees" ? 100
                      : label == "dogs" ? 300
                      : label == "whales" ? 800
+                     : label == "power" ? 2000
                      : 200;
             }
 
